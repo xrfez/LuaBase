@@ -41,4 +41,4 @@ for i = 1, 5 do
     print("  " .. i)
 end
 
-print("\n✅ Lua environment is working correctly!")
+print("\nâœ… Lua environment is working correctly!")

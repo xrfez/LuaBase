@@ -304,7 +304,10 @@ RUN mkdir -p /root/.zsh_persistent && \
     # Create directories for persistent history files \
     mkdir -p /root/.bash_history_persistent /root/.zsh_history_persistent /root/.cache/oh-my-posh && \
     # Configure bash history to use file in persistent directory \
-    echo 'export HISTFILE=/root/.bash_history_persistent/.bash_history' >> /root/.bashrc
+    echo 'export HISTFILE=/root/.bash_history_persistent/.bash_history' >> /root/.bashrc && \
+    # Ensure UTF-8 locale is set for bash scripts (for emoji and Unicode support) \
+    echo 'export LANG=C.UTF-8' >> /root/.bashrc && \
+    echo 'export LC_ALL=C.UTF-8' >> /root/.bashrc
 
 # Create workspace directory (will be overridden by volume mount)
 RUN mkdir -p /workspace
