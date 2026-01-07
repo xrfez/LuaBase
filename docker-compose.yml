@@ -1,0 +1,171 @@
+# Docker Compose configuration for Lua development environment
+# This file defines the services, networks, and volumes for the Lua dev environment.
+#
+# Usage:
+# - Build and start: docker-compose up -d
+# - Stop: docker-compose down
+# - Rebuild: docker-compose up -d --build
+# - View logs: docker-compose logs -f
+#
+# The configuration uses volumes to persist data between container restarts.
+
+version: '3.8'
+
+services:
+  # Main Lua development service
+  lua-dev:
+    # Build configuration
+    build:
+      # Use the Dockerfile in the current directory
+      context: .
+      dockerfile: Dockerfile
+      # Build arguments (can be overridden)
+      args:
+        LUABASE: /opt/lua
+        LUAJITBASE: /opt/luajit
+
+    # Container name for easy reference
+    container_name: lua-dev-container
+
+    # Image name after building
+    image: lua-dev:latest
+
+    # Keep container running even if no command is specified
+    stdin_open: true
+    tty: true
+
+    # Volume mounts
+    # Maps directories between host (Windows) and container (Linux)
+    volumes:
+      # Mount parent directory to /projects in container for access to sibling projects
+      # Current directory (LuaBase) is accessible at /projects/LuaBase
+      - type: bind
+        source: ..
+        target: /projects
+
+      # Persist LuaRocks packages across container rebuilds
+      - luarocks-cache:/root/.luarocks
+
+      # Persist Lua cache for faster execution
+      - lua-cache:/root/.cache/lua
+
+      # Persist bash history for convenience
+      - bash-history:/root/.bash_history_persistent
+
+      # Persist zsh history for convenience
+      - zsh-history:/root/.zsh_history_persistent
+
+      # Mount Docker socket for Docker-in-Docker (DinD) support
+      - /var/run/docker.sock:/var/run/docker.sock
+
+      # Mount SSH keys from Windows host for Git authentication
+      - ${USERPROFILE}/.ssh:/root/.ssh:ro
+
+      # Mount Git configuration from Windows host
+      - ${USERPROFILE}/.gitconfig:/root/.gitconfig:ro
+
+      # Persist custom zsh configuration across container rebuilds
+      - zsh-config:/root/.zsh_persistent
+
+      # Persist Neovim/Vim configurations
+      - nvim-config:/root/.config/nvim
+      - vim-config:/root/.vim
+
+      # Persist Git credentials and global ignore
+      - git-credentials:/root/.git-credentials
+      - git-global-config:/root/.config/git
+
+      # Persist Oh My Posh cache for faster shell startup
+      - omp-cache:/root/.cache/oh-my-posh
+
+      # Persist Docker CLI cache and configurations
+      - docker-config:/root/.docker
+
+    # Port mappings
+    ports:
+      - "8080:8080"
+      - "3000:3000"
+
+    # Environment variables
+    environment:
+      - TZ=UTC
+      - TERM=xterm-256color
+      - GIT_CONFIG_COUNT=1
+      - GIT_CONFIG_KEY_0=credential.helper
+      - GIT_CONFIG_VALUE_0=store
+
+    # Network configuration
+    networks:
+      - lua-network
+
+    # Restart policy
+    restart: unless-stopped
+
+    # Working directory inside container
+    working_dir: /workspace
+
+    # Default command
+    command: /bin/bash -c "tail -f /dev/null"
+
+# Named volumes for persistence
+volumes:
+  # LuaRocks package cache
+  luarocks-cache:
+    driver: local
+    name: lua-dev-luarocks-cache
+
+  # Lua cache
+  lua-cache:
+    driver: local
+    name: lua-dev-lua-cache
+
+  # Bash history
+  bash-history:
+    driver: local
+    name: lua-dev-bash-history
+
+  # Zsh history
+  zsh-history:
+    driver: local
+    name: lua-dev-zsh-history
+
+  # Zsh configuration persistence
+  zsh-config:
+    driver: local
+    name: lua-dev-zsh-config
+
+  # Neovim configuration
+  nvim-config:
+    driver: local
+    name: lua-dev-nvim-config
+
+  # Vim configuration
+  vim-config:
+    driver: local
+    name: lua-dev-vim-config
+
+  # Git credentials storage
+  git-credentials:
+    driver: local
+    name: lua-dev-git-credentials
+
+  # Git global configuration directory
+  git-global-config:
+    driver: local
+    name: lua-dev-git-global-config
+
+  # Oh My Posh cache
+  omp-cache:
+    driver: local
+    name: lua-dev-omp-cache
+
+  # Docker CLI cache and config
+  docker-config:
+    driver: local
+    name: lua-dev-docker-config
+
+# Custom network for the development environment
+networks:
+  lua-network:
+    driver: bridge
+    name: lua-dev-network

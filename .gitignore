@@ -1,0 +1,66 @@
+# Git ignore patterns for LuaBase
+
+# Learning materials
+Resources/
+
+# Lua compiled files
+*.luac
+luac.out
+
+# LuaRocks
+*.src.rock
+*.zip
+*.tar.gz
+/lua_modules/
+/.luarocks/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE and Editor files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.swp
+*.swo
+*~
+.idea/
+*.iml
+
+# Project specific
+*.log
+*.tmp
+*.bak
+*.orig
+
+# Build outputs
+/build/
+/dist/
+/out/
+
+# Testing
+/coverage/
+/.nyc_output/
+/test-results/
+
+# Dependencies
+/node_modules/
+/vendor/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Docker (if building locally)
+# Uncomment if you want to ignore Docker artifacts
+# *.tar
+# docker-compose.override.yml

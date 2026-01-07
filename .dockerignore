@@ -1,0 +1,54 @@
+# Docker ignore patterns for LuaBase
+# Files and directories to exclude from Docker build context
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+QUICKSTART.md
+LICENSE
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node modules (if any)
+node_modules
+npm-debug.log
+
+# Lua compiled
+*.luac
+
+# Build outputs
+build
+dist
+out
+
+# Test files
+tests
+spec
+*.test.lua
+*_spec.lua
+
+# Docker files
+docker-compose.override.yml
+.dockerignore
+
+# Temporary files
+*.tmp
+*.log
+*.bak

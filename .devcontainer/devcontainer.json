@@ -1,0 +1,151 @@
+// Dev Container configuration for Lua development environment
+// This file configures VS Code's Dev Containers extension to provide
+// a complete development environment inside a Docker container.
+//
+// Prerequisites:
+// - Docker Desktop installed on Windows 11
+// - VS Code with "Dev Containers" extension installed
+//
+// Usage:
+// 1. Open this folder in VS Code
+// 2. Press F1 and select "Dev Containers: Reopen in Container"
+// 3. VS Code will build the container and connect to it
+{
+	// Unique name for this dev container
+	"name": "Lua Development Environment",
+	// Use docker-compose to build and run the container
+	// This allows for more complex setups with volumes and networks
+	"dockerComposeFile": "../docker-compose.yml",
+	// The service name from docker-compose.yml to use
+	"service": "lua-dev",
+	// Path to the workspace folder inside the container
+	// This should match where LuaBase is mounted (parent dir is at /projects)
+	"workspaceFolder": "/projects/LuaBase",
+	
+	// Features to install in the container
+	// These are pre-built dev container features from Microsoft
+	"features": {
+		// Git is essential for version control
+		"ghcr.io/devcontainers/features/git:1": {},
+		// Common utilities like zsh for shell
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"installZsh": true,
+			"installOhMyZsh": true,
+			"configureZshAsDefaultShell": true,
+			"upgradePackages": true
+		}
+	},
+	
+	// VS Code settings to apply inside the container
+	"customizations": {
+		"vscode": {
+			// Extensions to install in the container
+			"extensions": [
+				// Lua language support - official extension from sumneko
+				"sumneko.lua",
+				// Docker support
+				"ms-azuretools.vscode-docker",
+				// Git integration
+				"eamodio.gitlens",
+				// Code formatting and linting
+				"editorconfig.editorconfig",
+				// Better comments
+				"aaron-bond.better-comments",
+				// StyLua formatter
+				"johnnymorganz.stylua"
+			],
+			
+			// VS Code settings for Lua development
+			"settings": {
+				// Lua-specific settings
+				"Lua.runtime.version": "Lua 5.4",
+				"Lua.workspace.library": [
+					"/opt/lua/share/lua/5.4"
+				],
+				"Lua.diagnostics.globals": ["vim"],
+				"Lua.telemetry.enable": false,
+				
+				// StyLua formatter settings
+				"stylua.targetReleaseVersion": "latest",
+				
+				// Lua file-specific formatting settings
+				"[lua]": {
+					"editor.defaultFormatter": "JohnnyMorganz.stylua",
+					"editor.formatOnSave": true,
+					"editor.tabSize": 2,
+					"editor.insertSpaces": true
+				},
+				
+				// Editor settings
+				"editor.formatOnSave": true,
+				"editor.tabSize": 2,
+				"editor.insertSpaces": true,
+				"editor.rulers": [80, 100],
+				
+				// Terminal settings - use zsh by default with Oh My Posh
+				"terminal.integrated.defaultProfile.linux": "zsh",
+				"terminal.integrated.profiles.linux": {
+					"bash": {
+						"path": "/bin/bash",
+						"icon": "terminal-bash"
+					},
+					"zsh": {
+						"path": "/bin/zsh",
+						"icon": "terminal"
+					}
+				},
+				
+				// Font settings for Nerd Fonts (install on Windows host)
+				"terminal.integrated.fontFamily": "MesloLGM Nerd Font, MesloLGS NF, FiraCode Nerd Font, Consolas, monospace",
+				"terminal.integrated.fontSize": 14,
+				
+				// File associations
+				"files.associations": {
+					"*.lua": "lua",
+					"*.rockspec": "lua"
+				},
+				
+				// Files to exclude from the file explorer
+				"files.exclude": {
+					"**/.git": true,
+					"**/.DS_Store": true,
+					"**/node_modules": true
+				},
+				
+				// Git settings
+				"git.confirmSync": false,
+				"git.autofetch": true,
+				"git.enableSmartCommit": true,
+				
+				// Docker settings
+				"docker.enableDockerComposeLanguageService": true
+			}
+		}
+	},
+	
+	// Port forwarding - these ports will be accessible from Windows
+	// Format: "containerPort:hostPort" or just "port" for same on both
+	"forwardPorts": [8080, 3000],
+	
+	// Ports to label for easy identification
+	"portsAttributes": {
+		"8080": {
+			"label": "Application",
+			"onAutoForward": "notify"
+		},
+		"3000": {
+			"label": "Web Server",
+			"onAutoForward": "notify"
+		}
+	},
+	
+	// Commands to run after the container is created (one-time setup)
+	// Copy zsh configuration so it works immediately
+	"postCreateCommand": "bash -c 'cp /root/.zshrc_custom ~/.zshrc 2>/dev/null || true && lua -v'",
+	
+	// Commands to run after attaching to the container (every time)
+	"postAttachCommand": "echo 'Welcome to Lua Development Environment with Oh My Posh'",
+	
+	// Use 'forwardPorts' to make a list of ports inside the container available locally
+	"remoteUser": "root"
+}
